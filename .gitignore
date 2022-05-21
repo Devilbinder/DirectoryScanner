@@ -1,4 +1,5 @@
-vscode
+vscode/*
+*.bak
 pico-sdk
 venv
 c_cpp_properties.json

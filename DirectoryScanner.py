@@ -86,9 +86,6 @@ class vsCode(DirScan):
         with open(append_file_path,"w") as f:
                 f.write(vs_code)
 
-
-
-
 if __name__ == "__main__":
 
     exclude_dir = ['.git']
