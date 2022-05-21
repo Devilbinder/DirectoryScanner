@@ -8,6 +8,7 @@ This is mainly targeted a C/C++ development where you have to setup the include 
 - Exclude or include files from paths
 - Exclude specified folders, paths or file names 
 - Only include file of a given extensions
+- Generate text file of all directories
 - Generate or append a `c_cpp_properties.json` file for vsCode include paths
 
 ## Todo
