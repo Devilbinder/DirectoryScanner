@@ -1,3 +1,4 @@
+from inspect import trace
 import os
 import platform
 import json
@@ -59,6 +60,14 @@ class DirScan():
         self.__filter_dir()
         return self.dir_filter
 
+    def scan_to_file(self,file_name:str) -> None:
+        if file_name == None or file_name == '':
+            raise ValueError("No file name given")
+        scan_dirs = self.scan()
+        with open(file_name,"w") as f:
+            for dir in scan_dirs:
+                f.write(dir + '\n')
+
 class vsCode(DirScan):
 
     def __init__(self, root_dir: str, include_filter: list = [], exclude_dir: list = []) -> None:
@@ -92,4 +101,5 @@ if __name__ == "__main__":
 
     scan = vsCode("I:\\workspace\\python\\dir_scanner\\pico-sdk", exclude_dir = exclude_dir)
     scan.create_cpp_config('./.vscode/c_cpp_properties.json')
+    scan.scan_to_file('paths.txt')
     pass
