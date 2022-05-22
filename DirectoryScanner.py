@@ -75,7 +75,7 @@ class vsCode(DirScan):
         super().__init__(root_dir, include_filter, exclude_dir, include_file = False,sep = '/')
 
     def create_cpp_config(self,append_file_path:str = '') -> None:
-        filter_dirs = super().scan()
+        filter_dirs = self.scan()
         filter_dirs = [x + '/*' for x in filter_dirs]
 
         if append_file_path == '':
