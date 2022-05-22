@@ -128,9 +128,9 @@ class MakeFile(DirScan):
                 continue
 
             # .join does not want to work here
-            # expected to work like below
             # "    ".join([scr,' \\\n']) results in   
             # scr "    " ' \\\n' for some reason
+            # expected to work like below
             src_dir = "    " + src + " \\\n"
 
             # same story here as above
