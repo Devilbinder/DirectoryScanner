@@ -10,9 +10,10 @@ This is mainly targeted at C/C++ development where you have to setup the include
 - Only include file of a given extensions
 - Generate text file of all directories
 - Generate or append a `c_cpp_properties.json` file for vsCode include paths
+- Generate a Makefile
 
 ## Todo
 - Add command line arguments
 - Test on Linux
-- Generate makefile
 - Generate a XML import file for Eclipse
+- Add template file support
