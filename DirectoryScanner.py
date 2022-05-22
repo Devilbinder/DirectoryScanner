@@ -4,6 +4,8 @@ import json
 
 class DirScan():
     def __init__(self,root_dir:str,include_filter:list = [],exclude_dir:list = [],include_file = True, sep = os.sep) -> None:
+        if(os.path.isdir(root_dir) == False):
+            raise  RuntimeError("Failed to find directory")
         self.root_dir = root_dir
         self.include_filter = include_filter
         self.exclude_dir = exclude_dir
