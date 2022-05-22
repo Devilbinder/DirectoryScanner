@@ -3,7 +3,7 @@ import platform
 import json
 
 class DirScan():
-    def __init__(self,root_dir:str,include_filter:list = [],exclude_dir:list = [],include_file = True, sep = os.sep) -> None:
+    def __init__(self,root_dir:str,include_filter:tuple = (),exclude_dir:list = [],include_file = True, sep = os.sep) -> None:
         if(os.path.isdir(root_dir) == False):
             raise  RuntimeError("Failed to find directory")
         self.root_dir = root_dir
@@ -35,7 +35,7 @@ class DirScan():
         if self.include_file == False:
             self.file_filter = self.dir_list
             return
-        if self.include_filter == []:
+        if self.include_filter == ():
             self.file_filter = self.dir_list
             return
         for dir_to_file in self.dir_list:
@@ -71,7 +71,7 @@ class DirScan():
 
 class vsCode(DirScan):
 
-    def __init__(self, root_dir: str, include_filter: list = [], exclude_dir: list = []) -> None:
+    def __init__(self, root_dir: str, include_filter:tuple = (), exclude_dir: list = []) -> None:
         super().__init__(root_dir, include_filter, exclude_dir, include_file = False,sep = '/')
 
     def create_cpp_config(self,append_file_path:str = '') -> None:
