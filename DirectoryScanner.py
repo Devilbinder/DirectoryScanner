@@ -3,6 +3,7 @@ import platform
 import json
 
 class DirScan():
+
     def __init__(self,root_dir:str,include_filter:tuple = (),exclude_dir:list = [],include_file = True, sep = os.sep) -> None:
         if(os.path.isdir(root_dir) == False):
             raise  RuntimeError("Failed to find directory")
@@ -96,11 +97,70 @@ class vsCode(DirScan):
         with open(append_file_path,"w") as f:
                 f.write(vs_code)
 
+class MakeFile(DirScan):
+
+    def __init__(self, root_dir: str, root_dir_macro: str = 'ROOT_DIR', exclude_dir: list = [], include_file=True) -> None:
+        include_filter =    (
+                            ".c",
+                            ".cpp",
+                            ".h",
+                            ".hpp",
+                            ".S",
+                            ".s"
+                            ".ASM"
+                            ".asm"
+                            )
+        self.root_dir_macro = root_dir_macro
+        super().__init__(root_dir, include_filter, exclude_dir, include_file, '/')
+        self.root_dir = root_dir.replace('\\','/')
+
+    def create_Makefile(self):
+        filter_dirs = self.scan()
+        root_var = "".join(['$(',self.root_dir_macro,')'])
+        strip_root_dirs = [x.replace(self.root_dir,root_var) for x in filter_dirs]
+        root_path = "".join([self.root_dir_macro,' := ', self.root_dir,"\n\n"])
+
+        src_files  = "SRC_FILES += \\\n"
+        inc_folder = "INC_FOLDERS += \\\n"
+
+        for src in strip_root_dirs:
+            if src.endswith((".c",".cpp",".S",".s",".ASM",".asm")) != True:
+                continue
+
+            # .join does not want to work here
+            # expected to work like below
+            # "    ".join([scr,' \\\n']) results in   
+            # scr "    " ' \\\n' for some reason
+            src_dir = "    " + src + " \\\n"
+
+            # same story here as above
+            src_files += src_dir
+
+        src_files += '\n'
+
+        for inc in strip_root_dirs:
+            if inc.endswith((".h",".hpp")) != True:
+                continue
+            last_sep = inc.rfind('/')
+            inc_folder += "    " + inc[:last_sep] + " \\\n"
+
+        inc_folder += '\n'
+
+        with open("Makefile","w") as f:
+            f.write(root_path)
+            f.write(src_files)
+            f.write(inc_folder)
+
+
+
 if __name__ == "__main__":
 
     exclude_dir = ['.git']
 
-    scan = vsCode("I:\\workspace\\python\\dir_scanner\\pico-sdk", exclude_dir = exclude_dir)
+    scan = vsCode("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
     scan.create_cpp_config('./.vscode/c_cpp_properties.json')
     scan.scan_to_file('paths.txt')
+
+    scan = MakeFile("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
+    scan.create_Makefile()
     pass
