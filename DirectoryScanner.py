@@ -23,7 +23,7 @@ class DirScan():
             for file in files:
                 sep_replace = root.replace(os.sep,self.sep)
                 if self.include_file == True:
-                    file_dir = ''.join([sep_replace,file])
+                    file_dir = ''.join([sep_replace,self.sep,file])
                 else:
                     file_dir = ''.join([sep_replace])
 
