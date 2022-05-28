@@ -166,6 +166,7 @@ class MakeFile(DirScan):
 
 def print_help():
     print('help')
+    exit()
 
 def vs_Code(argv):
     exclude_dir = ['.git']
@@ -220,6 +221,50 @@ def makefile(argv):
     scan = MakeFile(root_dir, root_makro, exclude_dir = exclude_dir)
     scan.create_Makefile()
 
+def dir_scan(argv):
+    exclude_dir = ['.git']
+    try:
+        opts, _ = getopt.getopt(argv,"d:f:i:e:l:s")
+    except:
+        print_help()
+        print("Error")
+
+    root_dir = '.'
+    file_name = 'paths.txt'
+    include_filter = ()
+    exclude_dir = ['.git']
+    include_file = True
+    sep = os.sep
+
+    for opt,arg in opts:
+        if opt in ["-d"]:
+            root_dir = arg
+            continue
+        if opt in ["-f"]:
+            file_name = arg
+            continue
+        if opt in ["-i"]:
+            include_filter = tuple(arg.split(','))
+            continue
+        if opt in ["-e"]:
+            exclude_dir = arg.split(',')
+            continue
+        if opt in ["-l"]:
+            if arg == '0':
+                include_file = True
+                continue
+            if arg == '1':
+                continue
+            print_help()
+        if opt in ["-s"]:
+            sep = arg
+            continue
+            
+            
+    scan = DirScan(root_dir,include_filter,exclude_dir,include_file,sep)
+    scan.scan_to_file(file_name)
+
+
 def main(type,argv):
 
     
@@ -234,7 +279,7 @@ def main(type,argv):
             makefile(argv)
             return
         if type == ['dirScan']:
-            #scan.scan_to_file('paths.txt')
+            dir_scan(argv)
             return
 
         print_help()
@@ -242,11 +287,6 @@ def main(type,argv):
     else:
         print_help()
     
-
-
-
-
-
     pass
 
 
