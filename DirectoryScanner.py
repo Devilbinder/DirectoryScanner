@@ -1,6 +1,8 @@
 import os
 import platform
 import json
+import sys
+import getopt
 
 class DirScan():
 
@@ -72,7 +74,17 @@ class DirScan():
 
 class vsCode(DirScan):
 
-    def __init__(self, root_dir: str, include_filter:tuple = (), exclude_dir: list = []) -> None:
+    def __init__(self, root_dir: str, exclude_dir: list = []) -> None:
+        include_filter =    (
+                    ".c",
+                    ".cpp",
+                    ".h",
+                    ".hpp",
+                    ".S",
+                    ".s"
+                    ".ASM"
+                    ".asm"
+                    )
         super().__init__(root_dir, include_filter, exclude_dir, include_file = False,sep = '/')
 
     def create_cpp_config(self,append_file_path:str = '') -> None:
@@ -152,15 +164,78 @@ class MakeFile(DirScan):
             f.write(inc_folder)
 
 
+def print_help():
+    print('help')
 
-if __name__ == "__main__":
-
+def vs_Code(argv):
     exclude_dir = ['.git']
+    try:
+        opts, args = getopt.getopt(argv,"d:e:f",["",""])
+    except:
+        print_help()
+        print("Error")
+    root_dir = '.'
+    exclude_dir = ['.git']
+    file_name = ''
 
-    scan = vsCode("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
-    scan.create_cpp_config('./.vscode/c_cpp_properties.json')
-    scan.scan_to_file('paths.txt')
+    for opt,arg in opts:
+        if opt in ["-d"]:
+            root_dir = arg
+            continue
+        if opt in ["-e"]:
+            exclude_dir = arg.split(',')
+            continue
+        if opt in ["-f"]:
+            file_name = arg
+            continue
 
+    scan = vsCode(root_dir = root_dir, exclude_dir = exclude_dir)
+    scan.create_cpp_config(file_name)
+    
+
+def makefile(argv):
+    exclude_dir = ['.git']
+    try:
+        opts, args = getopt.getopt(argv,"d:e:i",["ifile=","ofile="])
+    except:
+        print_help()
+        print("Error")
+
+    for opt,arg in opts:
+        pass
+        
     scan = MakeFile("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
     scan.create_Makefile()
+
+def main(type,argv):
+
+    
+    type_list = [['vsCode'],['Makefile']]
+
+    if type in type_list:
+        if type == ['vsCode']:
+            vs_Code(argv)
+            return
+
+        if type == ['makefile']:
+            makefile(argv)
+            return
+        if type == ['dirScan']:
+            scan.scan_to_file('paths.txt')
+            return
+
+        print_help()
+
+    else:
+        print_help()
+    
+
+
+
+
+
     pass
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:2],sys.argv[2:])
