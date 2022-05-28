@@ -111,7 +111,7 @@ class vsCode(DirScan):
 
 class MakeFile(DirScan):
 
-    def __init__(self, root_dir: str, root_dir_macro: str = 'ROOT_DIR', exclude_dir: list = [], include_file=True) -> None:
+    def __init__(self, root_dir: str, root_dir_macro: str = 'ROOT_DIR', exclude_dir: list = []) -> None:
         include_filter =    (
                             ".c",
                             ".cpp",
@@ -123,7 +123,7 @@ class MakeFile(DirScan):
                             ".asm"
                             )
         self.root_dir_macro = root_dir_macro
-        super().__init__(root_dir, include_filter, exclude_dir, include_file, '/')
+        super().__init__(root_dir, include_filter, exclude_dir, include_file = True, sep = '/')
         self.root_dir = root_dir.replace('\\','/')
 
     def create_Makefile(self):
@@ -170,10 +170,11 @@ def print_help():
 def vs_Code(argv):
     exclude_dir = ['.git']
     try:
-        opts, args = getopt.getopt(argv,"d:e:f",["",""])
+        opts, _ = getopt.getopt(argv,"d:e:f")
     except:
         print_help()
         print("Error")
+    
     root_dir = '.'
     exclude_dir = ['.git']
     file_name = ''
@@ -196,15 +197,27 @@ def vs_Code(argv):
 def makefile(argv):
     exclude_dir = ['.git']
     try:
-        opts, args = getopt.getopt(argv,"d:e:i",["ifile=","ofile="])
+        opts, _ = getopt.getopt(argv,"d:m:i")
     except:
         print_help()
         print("Error")
 
+    root_dir = '.'
+    root_makro = 'ROOT_DIR'
+    exclude_dir = ['.git']
+
     for opt,arg in opts:
-        pass
+        if opt in ["-d"]:
+            root_dir = arg
+            continue
+        if opt in ["-e"]:
+            exclude_dir = arg.split(',')
+            continue
+        if opt in ["-m"]:
+            root_makro = arg
+            continue
         
-    scan = MakeFile("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
+    scan = MakeFile(root_dir, root_makro, exclude_dir = exclude_dir)
     scan.create_Makefile()
 
 def main(type,argv):
@@ -221,7 +234,7 @@ def main(type,argv):
             makefile(argv)
             return
         if type == ['dirScan']:
-            scan.scan_to_file('paths.txt')
+            #scan.scan_to_file('paths.txt')
             return
 
         print_help()
