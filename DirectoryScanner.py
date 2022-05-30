@@ -163,24 +163,45 @@ class MakeFile(DirScan):
             f.write(src_files)
             f.write(inc_folder)
 
-
 def print_help():
-    print('help')
+    print("--------------------------------------------------------------------------------------------------------")
+    print("Invalid argument")
+    print("--------------------------------------------------------------------------------------------------------")
+    print('-h\t--help\t\tPrint this screen.')
+    print("--------------------------------------------------------------------------------------------------------")
+    print("vsCode\t\t\tCreate or append a c_cpp_properties.json file for vsCode.")
+    print("-d\t--dir\t\tRoot directory to scan.")
+    print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
+    print("-f\t--file\t\tFile to append or location to create.")
+    print("--------------------------------------------------------------------------------------------------------")
+    print("Makefile\t\t\tCreate a makefile.")
+    print("-d\t--dir\t\tRoot directory to scan.")
+    print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
+    print("-m\t--macro\t\tMacro to use as the root directory.")
+    print("--------------------------------------------------------------------------------------------------------")
+    print("dirScan\t\t\tCreate a makefile.")
+    print("-d\t--dir\t\tRoot directory to scan.")
+    print("-f\t--file\t\tName of file to create.")
+    print("-i\t--include\tFile extensions to include. Comma seperated.")
+    print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
+    print("-l\t--list\t\tInclude file with paths.")
+    print("-s\t--seperator\t\tset the path seperator.")
     exit()
 
 def vs_Code(argv):
     exclude_dir = ['.git']
     try:
-        opts, _ = getopt.getopt(argv,"d:e:f")
+        opts, _ = getopt.getopt(argv,"d:e:f",["--dir","--exclude","--file"])
     except:
         print_help()
-        print("Error")
     
     root_dir = '.'
     exclude_dir = ['.git']
     file_name = ''
 
     for opt,arg in opts:
+        if opt in ["-h"]:
+            print_help()
         if opt in ["-d"]:
             root_dir = arg
             continue
@@ -190,24 +211,26 @@ def vs_Code(argv):
         if opt in ["-f"]:
             file_name = arg
             continue
+        print('Invalid option {}'.format(opt))
+        print_help()
 
     scan = vsCode(root_dir = root_dir, exclude_dir = exclude_dir)
     scan.create_cpp_config(file_name)
     
-
 def makefile(argv):
     exclude_dir = ['.git']
     try:
-        opts, _ = getopt.getopt(argv,"d:m:i")
+        opts, _ = getopt.getopt(argv,"d:m:i",["--dir","--exclude","--macro"])
     except:
         print_help()
-        print("Error")
 
     root_dir = '.'
     root_makro = 'ROOT_DIR'
     exclude_dir = ['.git']
 
     for opt,arg in opts:
+        if opt in ["-h"]:
+            print_help()
         if opt in ["-d"]:
             root_dir = arg
             continue
@@ -217,6 +240,7 @@ def makefile(argv):
         if opt in ["-m"]:
             root_makro = arg
             continue
+        print_help()
         
     scan = MakeFile(root_dir, root_makro, exclude_dir = exclude_dir)
     scan.create_Makefile()
@@ -224,10 +248,9 @@ def makefile(argv):
 def dir_scan(argv):
     exclude_dir = ['.git']
     try:
-        opts, _ = getopt.getopt(argv,"d:f:i:e:l:s")
+        opts, _ = getopt.getopt(argv,"h:d:f:i:e:l:s",["--dir","--file","--include","--exclude","--list","--seperator"])
     except:
         print_help()
-        print("Error")
 
     root_dir = '.'
     file_name = 'paths.txt'
@@ -259,21 +282,23 @@ def dir_scan(argv):
         if opt in ["-s"]:
             sep = arg
             continue
+        print_help()
             
             
     scan = DirScan(root_dir,include_filter,exclude_dir,include_file,sep)
     scan.scan_to_file(file_name)
 
-
 def main(type,argv):
 
     
+    type_list = ['-h','--help','vsCode','Makefile','dirScan']
 
     if type not in type_list:
         print("Invalid argument {}".format(type))
         print("Valid arguments are {}".format(type_list))
         print_help()
 
+    if type == '--help' or type == '-h':
         print_help()
     if type == 'vsCode':
         vs_Code(argv)
