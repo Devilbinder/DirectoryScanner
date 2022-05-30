@@ -268,27 +268,22 @@ def dir_scan(argv):
 def main(type,argv):
 
     
-    type_list = [['vsCode'],['Makefile']]
 
-    if type in type_list:
-        if type == ['vsCode']:
-            vs_Code(argv)
-            return
-
-        if type == ['makefile']:
-            makefile(argv)
-            return
-        if type == ['dirScan']:
-            dir_scan(argv)
-            return
-
+    if type not in type_list:
+        print("Invalid argument {}".format(type))
+        print("Valid arguments are {}".format(type_list))
         print_help()
 
-    else:
         print_help()
-    
-    pass
-
+    if type == 'vsCode':
+        vs_Code(argv)
+        return
+    if type == 'makefile':
+        makefile(argv)
+        return
+    if type == 'dirScan':
+        dir_scan(argv)
+        return
 
 if __name__ == "__main__":
-    main(sys.argv[1:2],sys.argv[2:])
+    main(sys.argv[1:2][0],sys.argv[2:])
