@@ -1,6 +1,8 @@
 import os
 import platform
 import json
+import sys
+import getopt
 
 class DirScan():
 
@@ -72,7 +74,17 @@ class DirScan():
 
 class vsCode(DirScan):
 
-    def __init__(self, root_dir: str, include_filter:tuple = (), exclude_dir: list = []) -> None:
+    def __init__(self, root_dir: str, exclude_dir: list = []) -> None:
+        include_filter =    (
+                    ".c",
+                    ".cpp",
+                    ".h",
+                    ".hpp",
+                    ".S",
+                    ".s"
+                    ".ASM"
+                    ".asm"
+                    )
         super().__init__(root_dir, include_filter, exclude_dir, include_file = False,sep = '/')
 
     def create_cpp_config(self,append_file_path:str = '') -> None:
@@ -99,7 +111,7 @@ class vsCode(DirScan):
 
 class MakeFile(DirScan):
 
-    def __init__(self, root_dir: str, root_dir_macro: str = 'ROOT_DIR', exclude_dir: list = [], include_file=True) -> None:
+    def __init__(self, root_dir: str, root_dir_macro: str = 'ROOT_DIR', exclude_dir: list = []) -> None:
         include_filter =    (
                             ".c",
                             ".cpp",
@@ -111,7 +123,7 @@ class MakeFile(DirScan):
                             ".asm"
                             )
         self.root_dir_macro = root_dir_macro
-        super().__init__(root_dir, include_filter, exclude_dir, include_file, '/')
+        super().__init__(root_dir, include_filter, exclude_dir, include_file = True, sep = '/')
         self.root_dir = root_dir.replace('\\','/')
 
     def create_Makefile(self):
@@ -151,16 +163,154 @@ class MakeFile(DirScan):
             f.write(src_files)
             f.write(inc_folder)
 
+def print_help():
+    print("--------------------------------------------------------------------------------------------------------")
+    print("Invalid argument")
+    print("--------------------------------------------------------------------------------------------------------")
+    print('-h\t--help\t\tPrint this screen.')
+    print("--------------------------------------------------------------------------------------------------------")
+    print("vsCode\t\t\tCreate or append a c_cpp_properties.json file for vsCode.")
+    print("-d\t--dir\t\tRoot directory to scan.")
+    print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
+    print("-f\t--file\t\tFile to append or location to create.")
+    print("--------------------------------------------------------------------------------------------------------")
+    print("Makefile\t\t\tCreate a makefile.")
+    print("-d\t--dir\t\tRoot directory to scan.")
+    print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
+    print("-m\t--macro\t\tMacro to use as the root directory.")
+    print("--------------------------------------------------------------------------------------------------------")
+    print("dirScan\t\t\tCreate a makefile.")
+    print("-d\t--dir\t\tRoot directory to scan.")
+    print("-f\t--file\t\tName of file to create.")
+    print("-i\t--include\tFile extensions to include. Comma seperated.")
+    print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
+    print("-l\t--list\t\tInclude file with paths. Valid values: 0 or 1.")
+    print("-s\t--seperator\tSet the path seperator.")
+    exit()
 
+def vs_Code(argv):
+    exclude_dir = ['.git']
+    try:
+        opts, _ = getopt.getopt(argv,"h:d:e:f",["--help","--dir","--exclude","--file"])
+    except:
+        print_help()
+    
+    root_dir = '.'
+    exclude_dir = ['.git']
+    file_name = ''
 
-if __name__ == "__main__":
+    for opt,arg in opts:
+        if opt in ["-h","--help"]:
+            print_help()
+        if opt in ["-d","--dir"]:
+            root_dir = arg
+            continue
+        if opt in ["-e","--exclude"]:
+            exclude_dir = arg.split(',')
+            continue
+        if opt in ["-f","--file"]:
+            file_name = arg
+            continue
+        print('Invalid option {}'.format(opt))
+        print_help()
 
+    scan = vsCode(root_dir = root_dir, exclude_dir = exclude_dir)
+    scan.create_cpp_config(file_name)
+    
+def makefile(argv):
+    exclude_dir = ['.git']
+    try:
+        opts, _ = getopt.getopt(argv,"h:d:m:i",["--help","--dir","--exclude","--macro"])
+    except:
+        print_help()
+
+    root_dir = '.'
+    root_makro = 'ROOT_DIR'
     exclude_dir = ['.git']
 
-    scan = vsCode("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
-    scan.create_cpp_config('./.vscode/c_cpp_properties.json')
-    scan.scan_to_file('paths.txt')
-
-    scan = MakeFile("I:\\workspace\\python\\DirectoryScanner\\pico-sdk", exclude_dir = exclude_dir)
+    for opt,arg in opts:
+        if opt in ["-h","--help"]:
+            print_help()
+        if opt in ["-d","--dir"]:
+            root_dir = arg
+            continue
+        if opt in ["-e","--exclude"]:
+            exclude_dir = arg.split(',')
+            continue
+        if opt in ["-m","--macro"]:
+            root_makro = arg
+            continue
+        print_help()
+        
+    scan = MakeFile(root_dir, root_makro, exclude_dir = exclude_dir)
     scan.create_Makefile()
-    pass
+
+def dir_scan(argv):
+    exclude_dir = ['.git']
+    try:
+        opts, _ = getopt.getopt(argv,"h:d:f:i:e:l:s",["--help","--dir","--file","--include","--exclude","--list","--seperator"])
+    except:
+        print_help()
+
+    root_dir = '.'
+    file_name = 'paths.txt'
+    include_filter = ()
+    exclude_dir = ['.git']
+    include_file = True
+    sep = os.sep
+
+    for opt,arg in opts:
+        if opt in ["-h","--help"]:
+            print_help()
+        if opt in ["-d","--dir"]:
+            root_dir = arg
+            continue
+        if opt in ["-f","--file"]:
+            file_name = arg
+            continue
+        if opt in ["-i","--include"]:
+            include_filter = tuple(arg.split(','))
+            continue
+        if opt in ["-e","--exclude"]:
+            exclude_dir = arg.split(',')
+            continue
+        if opt in ["-l","--list"]:
+            if arg == '0':
+                include_file = True
+                continue
+            if arg == '1':
+                continue
+            print_help()
+        if opt in ["-s"]:
+            sep = arg
+            continue
+        print_help()
+            
+            
+    scan = DirScan(root_dir,include_filter,exclude_dir,include_file,sep)
+    scan.scan_to_file(file_name)
+
+def main(type,argv):
+
+    
+    type_list = ['-h','--help','vsCode','Makefile','dirScan']
+
+    if type not in type_list:
+        print("Invalid argument {}".format(type))
+        print("Valid arguments are {}".format(type_list))
+        print_help()
+
+    if type == '--help' or type == '-h':
+        print_help()
+    if type == 'vsCode':
+        vs_Code(argv)
+        return
+    if type == 'makefile':
+        makefile(argv)
+        return
+    if type == 'dirScan':
+        dir_scan(argv)
+        return
+
+if __name__ == "__main__":
+    main(sys.argv[1:2][0],sys.argv[2:])
