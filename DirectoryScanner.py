@@ -184,14 +184,14 @@ def print_help():
     print("-f\t--file\t\tName of file to create.")
     print("-i\t--include\tFile extensions to include. Comma seperated.")
     print("-e\t--exclude\tExclude a directory or part of a directory or file. Comma seperated.")
-    print("-l\t--list\t\tInclude file with paths.")
-    print("-s\t--seperator\t\tset the path seperator.")
+    print("-l\t--list\t\tInclude file with paths. Valid values: 0 or 1.")
+    print("-s\t--seperator\tSet the path seperator.")
     exit()
 
 def vs_Code(argv):
     exclude_dir = ['.git']
     try:
-        opts, _ = getopt.getopt(argv,"d:e:f",["--dir","--exclude","--file"])
+        opts, _ = getopt.getopt(argv,"h:d:e:f",["--help","--dir","--exclude","--file"])
     except:
         print_help()
     
@@ -200,15 +200,15 @@ def vs_Code(argv):
     file_name = ''
 
     for opt,arg in opts:
-        if opt in ["-h"]:
+        if opt in ["-h","--help"]:
             print_help()
-        if opt in ["-d"]:
+        if opt in ["-d","--dir"]:
             root_dir = arg
             continue
-        if opt in ["-e"]:
+        if opt in ["-e","--exclude"]:
             exclude_dir = arg.split(',')
             continue
-        if opt in ["-f"]:
+        if opt in ["-f","--file"]:
             file_name = arg
             continue
         print('Invalid option {}'.format(opt))
@@ -220,7 +220,7 @@ def vs_Code(argv):
 def makefile(argv):
     exclude_dir = ['.git']
     try:
-        opts, _ = getopt.getopt(argv,"d:m:i",["--dir","--exclude","--macro"])
+        opts, _ = getopt.getopt(argv,"h:d:m:i",["--help","--dir","--exclude","--macro"])
     except:
         print_help()
 
@@ -229,15 +229,15 @@ def makefile(argv):
     exclude_dir = ['.git']
 
     for opt,arg in opts:
-        if opt in ["-h"]:
+        if opt in ["-h","--help"]:
             print_help()
-        if opt in ["-d"]:
+        if opt in ["-d","--dir"]:
             root_dir = arg
             continue
-        if opt in ["-e"]:
+        if opt in ["-e","--exclude"]:
             exclude_dir = arg.split(',')
             continue
-        if opt in ["-m"]:
+        if opt in ["-m","--macro"]:
             root_makro = arg
             continue
         print_help()
@@ -248,7 +248,7 @@ def makefile(argv):
 def dir_scan(argv):
     exclude_dir = ['.git']
     try:
-        opts, _ = getopt.getopt(argv,"h:d:f:i:e:l:s",["--dir","--file","--include","--exclude","--list","--seperator"])
+        opts, _ = getopt.getopt(argv,"h:d:f:i:e:l:s",["--help","--dir","--file","--include","--exclude","--list","--seperator"])
     except:
         print_help()
 
@@ -260,19 +260,21 @@ def dir_scan(argv):
     sep = os.sep
 
     for opt,arg in opts:
-        if opt in ["-d"]:
+        if opt in ["-h","--help"]:
+            print_help()
+        if opt in ["-d","--dir"]:
             root_dir = arg
             continue
-        if opt in ["-f"]:
+        if opt in ["-f","--file"]:
             file_name = arg
             continue
-        if opt in ["-i"]:
+        if opt in ["-i","--include"]:
             include_filter = tuple(arg.split(','))
             continue
-        if opt in ["-e"]:
+        if opt in ["-e","--exclude"]:
             exclude_dir = arg.split(',')
             continue
-        if opt in ["-l"]:
+        if opt in ["-l","--list"]:
             if arg == '0':
                 include_file = True
                 continue
